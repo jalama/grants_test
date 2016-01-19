@@ -1,0 +1,8 @@
+name: Grants Test
+type: module
+description: Grants Test module
+core: 8.x
+package: test
+dependencies:
+  - hal
+  - basic_auth

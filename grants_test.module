@@ -1,0 +1,77 @@
+<?php
+
+/**
+ * @file
+ * Contains grants_test.module..
+ */
+
+use Drupal\Core\Routing\RouteMatchInterface;
+
+/**
+ * Implements hook_help().
+ */
+function grants_test_help($route_name, RouteMatchInterface $route_match) {
+  switch ($route_name) {
+    // Main module help for the grants_test module.
+    case 'help.page.grants_test':
+      $output = '';
+      $output .= '<h3>' . t('About') . '</h3>';
+      $output .= '<p>' . t('Grants Test module') . '</p>';
+      return $output;
+
+    default:
+  }
+}
+
+/**
+ * Implements hook_theme().
+ */
+function grants_test_theme() {
+  $theme = [];
+
+  return $theme;
+}
+
+/**
+ * Implements hook_node_grants().
+ */
+function grants_test_node_grants(\Drupal\Core\Session\AccountInterface $account, $op) {
+  $grants = [];
+
+  // Authors can see anything they have created.
+  if ($account->id()) {
+    $grants['author'] = array($account->id());
+  }
+
+  return $grants;
+}
+
+/**
+ * Implements hook_node_access_records().
+ */
+function grants_test_node_access_records(\Drupal\node\NodeInterface $node) {
+  $grants = [];
+
+  // Authors can see anything they have created.
+  if ($node->getOwnerId()) {
+    $grants[] = array(
+      'realm' => 'author',
+      'gid' => $node->getOwnerId(),
+      'grant_view' => 1,
+      'grant_update' => 0,
+      'grant_delete' => 0,
+    );
+  }
+
+  return $grants;
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_presave().
+ */
+function grants_test_node_presave(Drupal\Core\Entity\EntityInterface $entity) {
+  $query = \Drupal::entityQuery('node')
+    ->condition('status', 1);
+
+  $nids = $query->execute();
+}
